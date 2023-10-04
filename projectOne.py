@@ -1,3 +1,5 @@
+import random
+
 grid = []
 d = 10 # size of grid
 
@@ -26,3 +28,7 @@ def adjacent(x, y): #finds the neighbors of a cell by finding coordinates left/r
         y_right = y + 1
     else:
         y_right = -1
+
+random_x = random.randint(0, d - 1)
+random_y = random.randint(0, d - 1)
+grid[random_x][random_y] = 1 # open random square
