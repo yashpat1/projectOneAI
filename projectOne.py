@@ -6,7 +6,7 @@ for x in range(d):
         grid[x][y] = 0 # 0 signifies empty, while 1 signifies open cell
 
 
-def adjacent(x, y):
+def adjacent(x, y): #finds the neighbors of a cell by finding coordinates left/right/up/down of given cell
     if (x > 0):
         x_left = x - 1
     else:
