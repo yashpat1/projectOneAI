@@ -84,6 +84,6 @@ while len(deadend) > half:
     deadend.remove((selected_x, selected_y))
 
 #start 
-#printGrid()
+
 
 
