@@ -59,6 +59,7 @@ while possible:
 deadend = []
 for x in range(d):
     for y in range(d):
+        left, right, up, down = adjacent(x,y)
         if grid[x][y] == 1 and ((left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1)):
             deadend.append([x,y])
 
