@@ -54,7 +54,6 @@ while len(oneOpenNeighbor) != 0:
         selected_x, selected_y = oneOpenNeighbor[randIndex]
         grid[selected_x][selected_y] = 1
         oneOpenNeighbor.remove((selected_x, selected_y))
-        visited.append((selected_x,selected_y))
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
             if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
                 if (selected_x + r, selected_y + c) in oneOpenNeighbor:
