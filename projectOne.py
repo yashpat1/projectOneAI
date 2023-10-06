@@ -48,16 +48,18 @@ oneOpenNeighbor = []
 for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
     if start_x + r >= 0 and start_x + r < d and start_y + c >= 0 and start_y + c < d:
         oneOpenNeighbor.append((start_x + r, start_y + c))
+
 while len(oneOpenNeighbor) != 0:
         randIndex = random.randint(0, len(oneOpenNeighbor) - 1)
         selected_x, selected_y = oneOpenNeighbor[randIndex]
         grid[selected_x][selected_y] = 1
         oneOpenNeighbor.remove((selected_x, selected_y))
+        visited.append((selected_x,selected_y))
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
             if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
                 if (selected_x + r, selected_y + c) in oneOpenNeighbor:
                     oneOpenNeighbor.remove((selected_x + r, selected_y + c))
-                else:
+                elif (selected_x + r, selected_y + c) not in visited:
                     oneOpenNeighbor.append((selected_x + r, selected_y + c))
 
 # identify all "dead end" cells
@@ -69,7 +71,7 @@ for x in range(d):
             deadend.append((x,y))
 
 # randomly open one closed neighbor of approximately half of the "dead end" cells
-half = len(deadend) // 2.5
+half = len(deadend) // 1.75
 
 while len(deadend) > half:
     randIndex = random.randint(0, len(deadend) - 1)
