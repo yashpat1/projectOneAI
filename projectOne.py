@@ -58,7 +58,7 @@ while len(oneOpenNeighbor) != 0:
             if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
                 if (selected_x + r, selected_y + c) in oneOpenNeighbor:
                     oneOpenNeighbor.remove((selected_x + r, selected_y + c))
-                elif (selected_x + r, selected_y + c) not in visited:
+                else:
                     oneOpenNeighbor.append((selected_x + r, selected_y + c))
 
 # identify all "dead end" cells
