@@ -52,7 +52,7 @@ while possible:
         break
 
     random_pick = random.randint(0, len(blocked) - 1)
-    x1, y1 = random_pick
+    x1, y1 = blocked[random_pick]
     grid[x1][y1] = 1
 
 # identify all "dead end" cells
