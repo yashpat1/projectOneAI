@@ -31,7 +31,7 @@ def adjacent(x, y):
 
     return x_left, x_right, y_up, y_down
 
-#print's grid in terminal
+# print's grid in terminal
 def printGrid():
      for x in range(d):
         for y in range(d):
@@ -59,21 +59,6 @@ while len(oneOpenNeighbor) != 0:
                     oneOpenNeighbor.remove((selected_x + r, selected_y + c))
                 else:
                     oneOpenNeighbor.append((selected_x + r, selected_y + c))
-# possible = True
-# while possible:
-#     blocked = []
-#     for x in range(d):
-#         for y in range(d):
-#             left, right, up, down = adjacent(x,y)
-#             if (left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1):
-#                 blocked.append([x,y])
-    
-#     if len(blocked) == 0:
-#         break
-
-    # random_pick = random.randint(0, len(blocked) - 1)
-    # x1, y1 = blocked[random_pick]
-    # grid[x1][y1] = 1
 
 # identify all "dead end" cells
 deadend = []
@@ -97,9 +82,3 @@ while len(deadend) > half:
     neighborR, neighborC = neighbors[randNeighborIndex]
     grid[neighborR][neighborC] = 1
     deadend.remove((selected_x, selected_y))
-
-#start 
-
-
-# half = len(deadend) / 2.5
-
