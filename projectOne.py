@@ -76,9 +76,12 @@ while len(deadend) > half:
     selected_x, selected_y = deadend[randIndex]
     neighbors = []
     for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-                if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 1:
+                if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
                         neighbors.append((selected_x + r, selected_y + c))
     randNeighborIndex = random.randint(0, len(neighbors) - 1)
     neighborR, neighborC = neighbors[randNeighborIndex]
     grid[neighborR][neighborC] = 1
     deadend.remove((selected_x, selected_y))
+
+
+printGrid()
