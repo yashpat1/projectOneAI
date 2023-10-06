@@ -31,7 +31,7 @@ def adjacent(x, y):
 
     return x_left, x_right, y_up, y_down
 
-#print's grid in terminal
+# print's grid in terminal
 def printGrid():
      for x in range(d):
         for y in range(d):
