@@ -59,6 +59,21 @@ while len(oneOpenNeighbor) != 0:
                     oneOpenNeighbor.remove((selected_x + r, selected_y + c))
                 else:
                     oneOpenNeighbor.append((selected_x + r, selected_y + c))
+possible = True
+while possible:
+    blocked = []
+    for x in range(d):
+        for y in range(d):
+            left, right, up, down = adjacent(x,y)
+            if (left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1):
+                blocked.append([x,y])
+    
+    if len(blocked) == 0:
+        break
+
+    random_pick = random.randint(0, len(blocked) - 1)
+    x1, y1 = blocked[random_pick]
+    grid[x1][y1] = 1
 
 # identify all "dead end" cells
 deadend = []
@@ -86,4 +101,5 @@ while len(deadend) > half:
 #start 
 
 
+half = len(deadend) / 2.5
 
