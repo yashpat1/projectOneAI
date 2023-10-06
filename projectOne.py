@@ -64,6 +64,6 @@ for x in range(d):
             deadend.append([x,y])
 
 # randomly open one closed neighbor of approximately half of the "dead end" cells
-half = len(deadend) / 2
+half = len(deadend) / 2.5
 
 for i in half:
