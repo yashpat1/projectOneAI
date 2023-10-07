@@ -3,10 +3,11 @@ import random
 #grid = [[1 for i in range(d)] for i in range(d)]
 d = 10 # size of grid
 q = 0.5
+k = 0
 
 # creates the grid
 grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
-
+openCells = []
 # finds the open neighbors of a cell by finding coordinates left/right/up/down of given cell
 def adjacent(x, y):
     if x > 0 and grid[x - 1][y] == 1:
@@ -38,51 +39,91 @@ def printGrid():
             print(grid[x][y], end=" ")
         print("\n")
 
-# open a random square in the grid
-start_x = random.randint(0, d - 1)
-start_y = random.randint(0, d - 1)
-grid[start_x][start_y] = 1
+def init_grid():
+    # open a random square in the grid
+    start_x = random.randint(0, d - 1)
+    start_y = random.randint(0, d - 1)
+    grid[start_x][start_y] = 1
+    openCells.append((start_x, start_y))
 
-# identify all blocked cells with exactly 1 open neighbor and randomly choose one of them to open
-oneOpenNeighbor = []
-for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-    if start_x + r >= 0 and start_x + r < d and start_y + c >= 0 and start_y + c < d:
-        oneOpenNeighbor.append((start_x + r, start_y + c))
+    # identify all blocked cells with exactly 1 open neighbor and randomly choose one of them to open
+    oneOpenNeighbor = []
+    for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+        if start_x + r >= 0 and start_x + r < d and start_y + c >= 0 and start_y + c < d:
+            oneOpenNeighbor.append((start_x + r, start_y + c))
 
-while len(oneOpenNeighbor) != 0:
-        randIndex = random.randint(0, len(oneOpenNeighbor) - 1)
-        selected_x, selected_y = oneOpenNeighbor[randIndex]
-        grid[selected_x][selected_y] = 1
-        oneOpenNeighbor.remove((selected_x, selected_y))
+    while len(oneOpenNeighbor) != 0:
+            randIndex = random.randint(0, len(oneOpenNeighbor) - 1)
+            selected_x, selected_y = oneOpenNeighbor[randIndex]
+            grid[selected_x][selected_y] = 1
+            oneOpenNeighbor.remove((selected_x, selected_y))
+            openCells.append((selected_x, selected_y))
+            for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+                if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
+                    if (selected_x + r, selected_y + c) in oneOpenNeighbor:
+                        oneOpenNeighbor.remove((selected_x + r, selected_y + c))
+                    else:
+                        oneOpenNeighbor.append((selected_x + r, selected_y + c))
+
+    # identify all "dead end" cells
+    deadend = []
+    for x in range(d):
+        for y in range(d):
+            left, right, up, down = adjacent(x,y)
+            if grid[x][y] == 1 and ((left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1)):
+                deadend.append((x,y))
+
+    # randomly open one closed neighbor of approximately half of the "dead end" cells
+    half = len(deadend) // 1.75
+
+    while len(deadend) > half:
+        randIndex = random.randint(0, len(deadend) - 1)
+        selected_x, selected_y = deadend[randIndex]
+        neighbors = []
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
             if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
-                if (selected_x + r, selected_y + c) in oneOpenNeighbor:
-                    oneOpenNeighbor.remove((selected_x + r, selected_y + c))
-                else:
-                    oneOpenNeighbor.append((selected_x + r, selected_y + c))
+                    neighbors.append((selected_x + r, selected_y + c))
+        randNeighborIndex = random.randint(0, len(neighbors) - 1)
+        neighborR, neighborC = neighbors[randNeighborIndex]
+        grid[neighborR][neighborC] = 1
+        openCells.append((neighborR, neighborC))
+        deadend.remove((selected_x, selected_y))
 
-# identify all "dead end" cells
-deadend = []
-for x in range(d):
-    for y in range(d):
-        left, right, up, down = adjacent(x,y)
-        if grid[x][y] == 1 and ((left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1)):
-            deadend.append((x,y))
+fireCells = []
+def init_bot_fire_button():
+    # randomly choose start location by randomly choosing open cells (bot is represented by 2)
+    randIndex = random.randint(0, len(openCells) - 1)
+    bot_x, bot_y = openCells[randIndex]
+    grid[bot_x][bot_y] = 2
+    openCells.remove((bot_x, bot_y))
+    
+    # start fire at random open cell (fire represented by 3)
+    init_fire = random.randint(0, len(openCells) - 1) 
+    fire_x, fire_y = openCells[init_fire]
+    grid[fire_x][fire_y] = 3
+    fireCells.append((fire_x,fire_y))
+    openCells.remove((fire_x, fire_y))
 
-# randomly open one closed neighbor of approximately half of the "dead end" cells
-half = len(deadend) // 1.75
+    # randomly choose button location by randomly choosing open cells (button is represented by 4)
+    randIndex = random.randint(0, len(openCells) - 1)
+    button_x, button_y = openCells[randIndex]
+    grid[button_x][button_y] = 4
+    openCells.remove((button_x, button_y))
 
-while len(deadend) > half:
-    randIndex = random.randint(0, len(deadend) - 1)
-    selected_x, selected_y = deadend[randIndex]
-    neighbors = []
+    openCells.append((bot_x, bot_y))
+    openCells.append((fire_x, fire_y))
+    openCells.append((button_x, button_y))
+
+
+# spread fire every time step based on the probability 1 - (1 - q)^k
+def spread_fire():
+    spread_prob = 1 - (1 - q)^k
     for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-                if selected_x + r >= 0 and selected_x + r < d and selected_y + c >= 0 and selected_y + c < d and grid[selected_x + r][selected_y + c] == 0:
-                        neighbors.append((selected_x + r, selected_y + c))
-    randNeighborIndex = random.randint(0, len(neighbors) - 1)
-    neighborR, neighborC = neighbors[randNeighborIndex]
-    grid[neighborR][neighborC] = 1
-    deadend.remove((selected_x, selected_y))
+        if  + r >= 0 and start_x + r < d and start_y + c >= 0 and start_y + c < d:
+            oneOpenNeighbor.append((start_x + r, start_y + c))
 
-
+def run_bot_1():
+    
+    
+init_grid()
 printGrid()
