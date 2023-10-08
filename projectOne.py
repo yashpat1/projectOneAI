@@ -4,7 +4,6 @@ import collections
 #grid = [[1 for i in range(d)] for i in range(d)]
 d = 10 # size of grid
 q = 0.5
-k = 0
 
 # creates the grid
 grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
@@ -200,6 +199,7 @@ def printPrev(prev):
         for y in range(d):
             print(prev[x][y], end=" ")
         print("\n")
+
 # runs bot 1 
 def run_bot_1():
     print("Running Bot 1")
@@ -246,6 +246,58 @@ def run_bot_2():
         spread_fire()
         prev = bfs(bot_x, bot_y)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
+        print(path)
+        printGrid()
+        if len(path) == 0:
+            return "Failed"
+        time += 1
+
+# runs updated bfs starting from bot cell to account for cells adjacent to current fire cells
+def updated_bfs(bot_x, bot_y):
+    q = collections.deque()
+    visited = []
+    prev = [[None for i in range(d)] for i in range(d)]
+    q.append((bot_x, bot_y))
+    visited.append((bot_x, bot_y))
+
+    while len(q) != 0:
+        cur_x, cur_y = q.popleft()
+
+        for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+            if validCell(cur_x + r, cur_y + c) and (cur_x + r, cur_y + c) not in visited and (cur_x + r, cur_y + c) not in adjToFireCells and (grid[cur_x + r][cur_y + c] == 1 or grid[cur_x + r][cur_y + c] == 4):
+                q.append((cur_x + r, cur_y + c))
+                visited.append((cur_x + r, cur_y + c))
+                prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
+    return prev
+
+def run_bot_3():
+    print("Running Bot 3")
+    init_grid()
+    bot_x, bot_y, button_x, button_y = init_bot_fire_button()
+    prev = updated_bfs(bot_x, bot_y)
+    #printPrev(prev)
+    path = getPath(bot_x, bot_y, button_x, button_y, prev)
+    if(path == []):
+            prev = bfs(bot_x, bot_y)
+            path = getPath(bot_x, bot_y, button_x, button_y, prev)
+    print(path)
+    printGrid()
+    time = 1
+    while True:
+        print("Time:" + str(time))
+        grid[bot_x][bot_y] = 1
+        bot_x, bot_y = path[1]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
+        grid[bot_x][bot_y] = 2
+        if bot_x == button_x and bot_y == button_y:
+            return "Completed"
+        spread_fire()
+        prev = updated_bfs(bot_x, bot_y)
+        path = getPath(bot_x, bot_y, button_x, button_y, prev)
+        if(path == []):
+            prev = bfs(bot_x, bot_y)
+            path = getPath(bot_x, bot_y, button_x, button_y, prev)
         print(path)
         printGrid()
         if len(path) == 0:
