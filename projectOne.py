@@ -118,7 +118,7 @@ def init_bot_fire_button():
     grid[fire_x][fire_y] = 3
     fireCells.append((fire_x,fire_y))
     for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-        if validCell(fire_x + r, fire_y + c) and grid[fire_x + r][fire_y + c] == 0:
+        if validCell(fire_x + r, fire_y + c) and grid[fire_x + r][fire_y + c] == 1:
             adjToFireCells.append((fire_x + r, fire_y + c))
     openCells.remove((fire_x, fire_y))
 
@@ -151,17 +151,16 @@ def spread_fire():
                 spreadProb = (1 - pow((1 - q), k))
                 setOnFire = random.uniform(0, 1) < spreadProb
                 if setOnFire:
-                    fireCells.append((fire_neighbor_x, fire_neighbor_y))
                     grid[fire_neighbor_x][fire_neighbor_y] = 3
+                    fireCells.append((fire_neighbor_x, fire_neighbor_y))
+                    adjToFireCells.remove((fire_neighbor_x, fire_neighbor_y))
                     for (r2,c2) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-                        if validCell(fire_neighbor_x + r2, fire_neighbor_y + c2) and (fire_neighbor_x + r2, fire_neighbor_y + c2) in fireCells:
+                        if validCell(fire_neighbor_x + r2, fire_neighbor_y + c2) and grid[fire_neighbor_x + r2][fire_neighbor_y + c2] == 1:
                             adjToFireCells.append((fire_neighbor_x + r2, fire_neighbor_y + c2))
         numChecked += 1
         if numChecked == currentCellsOnFire:
             break
                 
-
-                         
 # reconstruct path from bfs                        
 def getPath(bot_x, bot_y, button_x, button_y, prev):
     path = []
@@ -224,6 +223,7 @@ def run_bot_1():
         printGrid()
         time += 1
 
+# runs bot 2
 def run_bot_2():
     print("Running Bot 2")
     init_grid()
@@ -270,6 +270,7 @@ def updated_bfs(bot_x, bot_y):
                 prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
     return prev
 
+# runs bot 3
 def run_bot_3():
     print("Running Bot 3")
     init_grid()
