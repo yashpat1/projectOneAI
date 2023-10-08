@@ -1,5 +1,6 @@
 import random
 import collections
+import heapq
 
 #grid = [[1 for i in range(d)] for i in range(d)]
 d = 10 # size of grid
@@ -304,6 +305,34 @@ def run_bot_3():
         if len(path) == 0:
             return "Failed"
         time += 1
+
+# runs A* starting from bot cell
+def a_star(bot_x, bot_y):
+    priority = []
+    prev = [[None for i in range(d)] for i in range(d)]
+    distances = [[-1 for i in range(d)] for i in range(d)]
+
+    heapq.heappush(priority, (0, (bot_x,bot_y)))
+    distances[bot_x][bot_y] = 0
+
+    while len(priority) != 0:
+        pri, cur_x, cur_y = heapq.heappop()
+
+        if grid[cur_x][cur_y] == 4:
+            return prev
+        
+        for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+            if validCell(cur_x + r, cur_y + c) and grid[cur_x + r][cur_y + c] == 1:
+                temp_dist = distances[cur_x][cur_y] # need to finish
+                prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
+    
+
+
+
+# runs bot 4
+def run_bot_4(): 
+    print("Running Bot 4")
+    init_grid()
         
 
 # runs all bots
