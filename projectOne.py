@@ -223,11 +223,43 @@ def run_bot_1():
         spread_fire()
         printGrid()
         time += 1
+
+def run_bot_2():
+    print("Running Bot 2")
+    init_grid()
+    bot_x, bot_y, button_x, button_y = init_bot_fire_button()
+    prev = bfs(bot_x, bot_y)
+    #printPrev(prev)
+    path = getPath(bot_x, bot_y, button_x, button_y, prev)
+    print(path)
+    printGrid()
+    time = 1
+    while True:
+        print("Time:" + str(time))
+        grid[bot_x][bot_y] = 1
+        bot_x, bot_y = path[1]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
+        grid[bot_x][bot_y] = 2
+        if bot_x == button_x and bot_y == button_y:
+            return "Completed"
+        spread_fire()
+        prev = bfs(bot_x, bot_y)
+        path = getPath(bot_x, bot_y, button_x, button_y, prev)
+        print(path)
+        printGrid()
+        if len(path) == 0:
+            return "Failed"
+        time += 1
         
 
 # runs all bots
 def run_bots():
-    result = run_bot_1()
+    # result = run_bot_1()
+    # print("Task" + result)
+    # reset(openCells, fireCells, adjToFireCells)
+    # print("Reset")
+    result = run_bot_2()
     print("Task" + result)
     reset(openCells, fireCells, adjToFireCells)
     print("Reset")
