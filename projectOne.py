@@ -153,7 +153,7 @@ def spread_fire():
                 if setOnFire:
                     grid[fire_neighbor_x][fire_neighbor_y] = 3
                     fireCells.append((fire_neighbor_x, fire_neighbor_y))
-                    adjToFireCells.remove((fire_neighbor_x, fire_neighbor_y))
+                    # adjToFireCells.remove((fire_neighbor_x, fire_neighbor_y))
                     for (r2,c2) in [(1,0), (-1,0), (0,-1), (0, 1)]:
                         if validCell(fire_neighbor_x + r2, fire_neighbor_y + c2) and grid[fire_neighbor_x + r2][fire_neighbor_y + c2] == 1:
                             adjToFireCells.append((fire_neighbor_x + r2, fire_neighbor_y + c2))
@@ -205,7 +205,7 @@ def run_bot_1():
     init_grid()
     bot_x, bot_y, button_x, button_y = init_bot_fire_button()
     prev = bfs(bot_x, bot_y)
-    printPrev(prev)
+    #printPrev(prev)
     path = getPath(bot_x, bot_y, button_x, button_y, prev)
     print(path)
     printGrid()
@@ -309,17 +309,17 @@ def run_bot_3():
 # runs all bots
 def run_bots():
     # result = run_bot_1()
-    # print("Task" + result)
+    # print("Task " + result)
     # reset(openCells, fireCells, adjToFireCells)
     # print("Reset")
     
     # result = run_bot_2()
-    # print("Task" + result)
+    # print("Task " + result)
     # reset(openCells, fireCells, adjToFireCells)
     # print("Reset")
 
     result = run_bot_3()
-    print("Task" + result)
+    print("Task " + result)
     reset(openCells, fireCells, adjToFireCells)
     print("Reset") 
 
