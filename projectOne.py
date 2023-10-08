@@ -311,9 +311,16 @@ def run_bots():
     # print("Task" + result)
     # reset(openCells, fireCells, adjToFireCells)
     # print("Reset")
-    result = run_bot_2()
+    
+    # result = run_bot_2()
+    # print("Task" + result)
+    # reset(openCells, fireCells, adjToFireCells)
+    # print("Reset")
+
+    result = run_bot_3()
     print("Task" + result)
     reset(openCells, fireCells, adjToFireCells)
-    print("Reset")
+    print("Reset") 
+
 
 run_bots()
