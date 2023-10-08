@@ -100,10 +100,13 @@ fireCells = []
 adjToFireCells = []
 
 # resets lists
-def reset(openCells, fireCells, adjToFireCells):
+def reset(openCells, fireCells, adjToFireCells, grid):
     openCells = []
     fireCells = []
     adjToFireCells = []
+    grid = [[0 for i in range(d)] for i in range(d)]
+
+    return openCells, fireCells, adjToFireCells, grid
 
 # initialize the bot, fire, and button cells 
 def init_bot_fire_button():
@@ -137,30 +140,28 @@ def init_bot_fire_button():
 
 
 # spread fire every time step based on the probability 1 - (1 - q)^k
-def spread_fire():
+def spread_fire1():
     numChecked = 0
-    currentCellsOnFire = len(fireCells)
-    for cur_fire_x, cur_fire_y in fireCells:
+    currLengthAdj = len(adjToFireCells)
+    adjCell_copy = []
+    for adj_fire_x, adj_fire_y in adjToFireCells:
+        adjCell_copy.append((adj_fire_x, adj_fire_y))
+
+    for adj_fire_x, adj_fire_y in adjCell_copy:
+        k = 0
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-            fire_neighbor_x = cur_fire_x + r 
-            fire_neighbor_y = cur_fire_y + c
-            if validCell(fire_neighbor_x, fire_neighbor_y) and grid[fire_neighbor_x][fire_neighbor_y] == 1:
-                k = 0
-                for (r2,c2) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-                     if validCell(fire_neighbor_x + r2, fire_neighbor_y + c2) and (fire_neighbor_x + r2, fire_neighbor_y + c2) in fireCells:
-                         k += 1
-                spreadProb = (1 - pow((1 - q), k))
-                setOnFire = random.uniform(0, 1) < spreadProb
-                if setOnFire:
-                    grid[fire_neighbor_x][fire_neighbor_y] = 3
-                    fireCells.append((fire_neighbor_x, fire_neighbor_y))
-                    # adjToFireCells.remove((fire_neighbor_x, fire_neighbor_y))
-                    for (r2,c2) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-                        if validCell(fire_neighbor_x + r2, fire_neighbor_y + c2) and grid[fire_neighbor_x + r2][fire_neighbor_y + c2] == 1:
-                            adjToFireCells.append((fire_neighbor_x + r2, fire_neighbor_y + c2))
-        numChecked += 1
-        if numChecked == currentCellsOnFire:
-            break
+            if validCell(adj_fire_x + r, adj_fire_y + c) and (adj_fire_x + r, adj_fire_y + c) in fireCells:
+                k += 1
+        spreadProb = (1 - pow((1 - q), k))
+        setOnFire = random.uniform(0, 1) < spreadProb
+        if setOnFire:
+            grid[adj_fire_x][adj_fire_y] = 3
+            fireCells.append((adj_fire_x, adj_fire_y))
+            adjToFireCells.remove((adj_fire_x, adj_fire_y))
+            for (r2,c2) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+                if validCell(adj_fire_x + r2, adj_fire_y + c2) and grid[adj_fire_x + r2][adj_fire_y + c2] == 1:
+                    adjToFireCells.append((adj_fire_x + r2, adj_fire_y + c2))
+
                 
 # reconstruct path from bfs                        
 def getPath(bot_x, bot_y, button_x, button_y, prev):
@@ -187,6 +188,9 @@ def bfs(bot_x, bot_y):
     while len(q) != 0:
         cur_x, cur_y = q.popleft()
 
+        if grid[cur_x][cur_y] == 4:
+            return prev
+
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
             if validCell(cur_x + r, cur_y + c) and (cur_x + r, cur_y + c) not in visited and (grid[cur_x + r][cur_y + c] == 1 or grid[cur_x + r][cur_y + c] == 4):
                 q.append((cur_x + r, cur_y + c))
@@ -203,6 +207,7 @@ def printPrev(prev):
 # runs bot 1 
 def run_bot_1():
     print("Running Bot 1")
+   # printGrid()
     init_grid()
     bot_x, bot_y, button_x, button_y = init_bot_fire_button()
     prev = bfs(bot_x, bot_y)
@@ -220,7 +225,7 @@ def run_bot_1():
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
-        spread_fire()
+        spread_fire1()
         printGrid()
         time += 1
 
@@ -244,7 +249,7 @@ def run_bot_2():
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
-        spread_fire()
+        spread_fire1()
         prev = bfs(bot_x, bot_y)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
         print(path)
@@ -263,6 +268,9 @@ def updated_bfs(bot_x, bot_y):
 
     while len(q) != 0:
         cur_x, cur_y = q.popleft()
+
+        if grid[cur_x][cur_y] == 4:
+            return prev
 
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
             if validCell(cur_x + r, cur_y + c) and (cur_x + r, cur_y + c) not in visited and (cur_x + r, cur_y + c) not in adjToFireCells and (grid[cur_x + r][cur_y + c] == 1 or grid[cur_x + r][cur_y + c] == 4):
@@ -294,7 +302,7 @@ def run_bot_3():
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
-        spread_fire()
+        spread_fire1()
         prev = updated_bfs(bot_x, bot_y)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
         if(path == []):
@@ -307,7 +315,7 @@ def run_bot_3():
         time += 1
 
 # calculate heuristic based on manhatten distance
-def h(x,y, button_x, button_y):
+def h(x, y, button_x, button_y):
     return abs(x - button_x) + abs(y - button_y)
 
 # runs A* starting from bot cell
@@ -333,13 +341,7 @@ def a_star(bot_x, bot_y, button_x, button_y):
                     distanceTo[(cur_x + r, cur_y + c)] = temp_dist
                     prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
                     heapq.heappush(priority, (temp_dist + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
-                                   
-               # temp_dist = distances[cur_x][cur_y] # need to finish
-               # distanceTo[(cur_x, cur_y)] + h(cur_x + r, cur_y + c, button_x, button_y) < distanceTo[(cur_x + r, cur_y + c)])
-               # prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
-    
-
-
+    return prev
 
 # runs bot 4
 def run_bot_4(): 
@@ -360,7 +362,7 @@ def run_bot_4():
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
-        spread_fire()
+        spread_fire1()
         prev = a_star(bot_x, bot_y, button_x, button_y)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
         print(path)
@@ -372,25 +374,26 @@ def run_bot_4():
 
 # runs all bots
 def run_bots():
-    # result = run_bot_1()
-    # print("Task " + result)
-    # reset(openCells, fireCells, adjToFireCells)
-    # print("Reset")
+    for i in range(3):
+        result = run_bot_1()
+        print("Task " + result)
+        reset(openCells, fireCells, adjToFireCells, grid)
+        print("Reset")
     
     # result = run_bot_2()
     # print("Task " + result)
-    # reset(openCells, fireCells, adjToFireCells)
+    # reset(openCells, fireCells, adjToFireCells, grid)
     # print("Reset")
 
     # result = run_bot_3()
     # print("Task " + result)
-    # reset(openCells, fireCells, adjToFireCells)
+    # reset(openCells, fireCells, adjToFireCells, grid)
     # print("Reset") 
 
-    result = run_bot_4()
-    print("Task " + result)
-    reset(openCells, fireCells, adjToFireCells)
-    print("Reset") 
+    # result = run_bot_4()
+    # print("Task " + result)
+    # reset(openCells, fireCells, adjToFireCells, grid)
+    # print("Reset") 
 
 
 run_bots()
