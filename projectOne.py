@@ -306,25 +306,37 @@ def run_bot_3():
             return "Failed"
         time += 1
 
+# calculate heuristic based on manhatten distance
+def h(x,y, button_x, button_y):
+    return abs(x - button_x) + abs(y - button_y)
+
 # runs A* starting from bot cell
-def a_star(bot_x, bot_y):
+def a_star(bot_x, bot_y, button_x, button_y):
     priority = []
     prev = [[None for i in range(d)] for i in range(d)]
-    distances = [[-1 for i in range(d)] for i in range(d)]
+    #distances = {[[-1 for i in range(d)] for i in range(d)]}
+    distanceTo = {}
 
     heapq.heappush(priority, (0, (bot_x,bot_y)))
-    distances[bot_x][bot_y] = 0
+    distanceTo[(bot_x, bot_y)] = 0
 
     while len(priority) != 0:
-        pri, cur_x, cur_y = heapq.heappop()
+        cur_x, cur_y = heapq.heappop(priority)[1]
 
         if grid[cur_x][cur_y] == 4:
             return prev
         
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-            if validCell(cur_x + r, cur_y + c) and grid[cur_x + r][cur_y + c] == 1:
-                temp_dist = distances[cur_x][cur_y] # need to finish
-                prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
+            if validCell(cur_x + r, cur_y + c) and (grid[cur_x + r][cur_y + c] == 1 or grid[cur_x + r][cur_y + c] == 4):
+                temp_dist = distanceTo[(cur_x, cur_y)] + 1
+                if (cur_x + r, cur_y + c) not in distanceTo or temp_dist < distanceTo[(cur_x + r, cur_y + c)]:
+                    distanceTo[(cur_x + r, cur_y + c)] = temp_dist
+                    prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
+                    heapq.heappush(priority, (temp_dist + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
+                                   
+               # temp_dist = distances[cur_x][cur_y] # need to finish
+               # distanceTo[(cur_x, cur_y)] + h(cur_x + r, cur_y + c, button_x, button_y) < distanceTo[(cur_x + r, cur_y + c)])
+               # prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
     
 
 
@@ -333,7 +345,30 @@ def a_star(bot_x, bot_y):
 def run_bot_4(): 
     print("Running Bot 4")
     init_grid()
-        
+    bot_x, bot_y, button_x, button_y = init_bot_fire_button()
+    prev = a_star(bot_x, bot_y, button_x, button_y)
+    path = getPath(bot_x, bot_y, button_x, button_y, prev)
+    print(path)
+    printGrid()
+    time = 1
+    while True:
+        print("Time:" + str(time))
+        grid[bot_x][bot_y] = 1
+        bot_x, bot_y = path[1]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
+        grid[bot_x][bot_y] = 2
+        if bot_x == button_x and bot_y == button_y:
+            return "Completed"
+        spread_fire()
+        prev = a_star(bot_x, bot_y, button_x, button_y)
+        path = getPath(bot_x, bot_y, button_x, button_y, prev)
+        print(path)
+        printGrid()
+        if len(path) == 0:
+            return "Failed"
+        time += 1
+
 
 # runs all bots
 def run_bots():
@@ -347,7 +382,12 @@ def run_bots():
     # reset(openCells, fireCells, adjToFireCells)
     # print("Reset")
 
-    result = run_bot_3()
+    # result = run_bot_3()
+    # print("Task " + result)
+    # reset(openCells, fireCells, adjToFireCells)
+    # print("Reset") 
+
+    result = run_bot_4()
     print("Task " + result)
     reset(openCells, fireCells, adjToFireCells)
     print("Reset") 
