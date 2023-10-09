@@ -4,7 +4,8 @@ import heapq
 
 #grid = [[1 for i in range(d)] for i in range(d)]
 d = 50 # size of grid
-q = 0.5
+q = 0.8
+num_tests = 250
 
 # creates the grid
 # grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
@@ -14,25 +15,37 @@ q = 0.5
 
 # finds the open neighbors of a cell by finding coordinates left/right/up/down of given cell
 def adjacent(x, y, grid):
-    if x > 0 and grid[x - 1][y] == 1:
-        x_left = x - 1
-    else:
-        x_left = -1
+    # if x > 0 and grid[x - 1][y] == 1:
+    #     x_left = x - 1
+    # else:
+    #     x_left = -1
 
-    if x < len(grid) - 1 and grid[x + 1][y] == 1:
-        x_right = x + 1
-    else:
-        x_right = -1
+    # if x < len(grid) - 1 and grid[x + 1][y] == 1:
+    #     x_right = x + 1
+    # else:
+    #     x_right = -1
     
-    if y > 0 and grid[x][y - 1] == 1:
-        y_up = y - 1
-    else: 
-        y_up = -1
+    # if y > 0 and grid[x][y - 1] == 1:
+    #     y_up = y - 1
+    # else: 
+    #     y_up = -1
     
-    if y < len(grid[x]) - 1 and grid[x][y + 1] == 1:
-        y_down = y + 1
-    else:
-        y_down = -1
+    # if y < len(grid[x]) - 1 and grid[x][y + 1] == 1:
+    #     y_down = y + 1
+    # else:
+    #     y_down = -1
+    numNeighbors = 0
+    for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+        if validCell(x + r, y + c):
+            numNeighbors += 1
+
+    numBlockedNeighbors = 0
+    for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+        if validCell(x + r, y + c) and grid[x + r][y + c] == 0:
+            numBlockedNeighbors += 1
+
+    return numNeighbors - numBlockedNeighbors == 1
+
 
     return x_left, x_right, y_up, y_down
 
@@ -78,9 +91,11 @@ def init_grid(grid, openCells):
     deadend = []
     for x in range(d):
         for y in range(d):
-            left, right, up, down = adjacent(x,y, grid)
-            if grid[x][y] == 1 and ((left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1)):
-                deadend.append((x,y))
+            # left, right, up, down = adjacent(x,y, grid)
+            # if grid[x][y] == 1 and ((left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1)):
+            #     deadend.append((x,y))
+            if grid[x][y] == 1 and adjacent(x, y, grid):
+                deadend.append((x, y))
 
     # randomly open one closed neighbor of approximately half of the "dead end" cells
     half = len(deadend) // 1.75
@@ -92,7 +107,10 @@ def init_grid(grid, openCells):
         for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
             if validCell(selected_x + r, selected_y + c) and grid[selected_x + r][selected_y + c] == 0:
                     neighbors.append((selected_x + r, selected_y + c))
-        randNeighborIndex = random.randint(0, len(neighbors) - 1)
+        if len(neighbors) == 0:
+            deadend.remove((selected_x, selected_y))
+            continue
+        randNeighborIndex = random.randint(0, len(neighbors) - 1) #possible bug
         neighborR, neighborC = neighbors[randNeighborIndex]
         grid[neighborR][neighborC] = 1
         openCells.append((neighborR, neighborC))
@@ -207,7 +225,7 @@ def printPrev(prev):
 
 # runs bot 1 
 def run_bot_1():
-    print("Running Bot 1")
+    #print("Running Bot 1")
     grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
     openCells = []
     fireCells = []
@@ -237,7 +255,7 @@ def run_bot_1():
 
 # runs bot 2
 def run_bot_2():
-    print("Running Bot 2")
+    #print("Running Bot 2")
     grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
     openCells = []
     fireCells = []
@@ -288,7 +306,7 @@ def updated_bfs(bot_x, bot_y, grid, adjToFireCells):
 
 # runs bot 3 using updated bfs
 def run_bot_3():
-    print("Running Bot 3")
+    #print("Running Bot 3")
     grid = [[0 for i in range(d)] for i in range(d)]
     openCells = []
     fireCells = []
@@ -358,7 +376,7 @@ def a_star(bot_x, bot_y, button_x, button_y, grid):
 
 # runs bot 4
 def run_bot_4(): 
-    print("Running Bot 4")
+    #print("Running Bot 4")
     grid = [[0 for i in range(d)] for i in range(d)]
     openCells = []
     fireCells = []
@@ -389,20 +407,71 @@ def run_bot_4():
 
 # runs all bots
 def run_bots():
-    result = run_bot_1()
-    print("Task " + result)
-   # print("Reset")
+    # 0.2, 0.4, 0.6, 0.8 
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 1 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_1()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 2 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_2()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 3 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_3()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 4 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_4()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
     
-    result = run_bot_2()
-    print("Task " + result)
-   # print("Reset")
+    
 
-    result = run_bot_3()
-    print("Task " + result)
-   # print("Reset")
+#     result = run_bot_2()
+#     print("Task " + result)
+#    # print("Reset")
 
-    result = run_bot_4()
-    print("Task " + result)
+#     result = run_bot_3()
+#     print("Task " + result)
+#    # print("Reset")
+
+#     result = run_bot_4()
+#     print("Task " + result)
    # print("Reset")
 
 
