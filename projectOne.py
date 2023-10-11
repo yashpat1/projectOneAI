@@ -399,6 +399,7 @@ def a_star(bot_x, bot_y, button_x, button_y, grid):
                 if (cur_x + r, cur_y + c) not in distanceTo or temp_dist < distanceTo[(cur_x + r, cur_y + c)]:
                     distanceTo[(cur_x + r, cur_y + c)] = temp_dist
                     prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
+                    # fire_x, fire_y = weight(cur_x + r, cur_y + c, grid)
                     heapq.heappush(priority, (temp_dist + weight(cur_x + r, cur_y + c, grid) + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
     return prev
 
