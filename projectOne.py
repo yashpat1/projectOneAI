@@ -278,8 +278,12 @@ def run_bot_2():
         #printGrid(grid)
         if len(path) == 0:
             return "Failed"
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 1
         bot_x, bot_y = path[1]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
@@ -332,8 +336,12 @@ def run_bot_3():
         #printGrid(grid)
         if len(path) == 0:
             return "Failed"
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 1
         bot_x, bot_y = path[1]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
@@ -346,19 +354,34 @@ def run_bot_3():
 def h(x, y, button_x, button_y):
     return abs(x - button_x) + abs(y - button_y)
 
-# def cost(x, y, grid):
-#     badNeighbors = 0
-#     for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-#         if validCell(x + r, y + c) and (grid[x + r][y + c] == 0 or grid[x + r][y + c] == 3):
-#             badNeighbors += 1
-#     return badNeighbors
+def weight(x, y, grid):
+    q = collections.deque()
+    visited = []
+    distanceTo = {}
+    q.append((x, y))
+    visited.append((x, y))
+    distanceTo[(x,y)] = 0
+    
+
+    while len(q) != 0:
+        cur_x, cur_y = q.popleft()
+
+        if grid[cur_x][cur_y] == 3:
+            return 1 / distanceTo[(cur_x, cur_y)]
+
+        for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
+            if validCell(cur_x + r, cur_y + c) and (cur_x + r, cur_y + c) not in visited and (grid[cur_x + r][cur_y + c] != 0):
+                q.append((cur_x + r, cur_y + c))
+                visited.append((cur_x + r, cur_y + c))
+                distanceTo[(cur_x + r, cur_y + c)] = distanceTo[(cur_x, cur_y)] + 1
+                
+    return []
      
 
 # runs A* starting from bot cell
 def a_star(bot_x, bot_y, button_x, button_y, grid):
     priority = []
     prev = [[None for i in range(d)] for i in range(d)]
-    #distances = {[[-1 for i in range(d)] for i in range(d)]}
     distanceTo = {}
 
     heapq.heappush(priority, (0, (bot_x,bot_y)))
@@ -376,7 +399,7 @@ def a_star(bot_x, bot_y, button_x, button_y, grid):
                 if (cur_x + r, cur_y + c) not in distanceTo or temp_dist < distanceTo[(cur_x + r, cur_y + c)]:
                     distanceTo[(cur_x + r, cur_y + c)] = temp_dist
                     prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
-                    heapq.heappush(priority, (temp_dist + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
+                    heapq.heappush(priority, (temp_dist + weight(cur_x + r, cur_y + c, grid) + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
     return prev
 
 # runs bot 4
@@ -399,8 +422,12 @@ def run_bot_4():
        # printGrid(grid)
         if len(path) == 0:
             return "Failed"
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 1
         bot_x, bot_y = path[1]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
@@ -452,18 +479,18 @@ def run_bots():
     # print(str(num_success) + "/" + str(num_tests) + " PASS")
     # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
-    # print()
-    # num_success = 0
-    # num_fail = 0
-    # print("Running Tests for Bot 4 at q: " + str(q))
-    # for i in range(num_tests):
-    #     result = run_bot_4()
-    #     if result == "Completed":
-    #         num_success += 1
-    #     else:
-    #         num_fail += 1
-    # print(str(num_success) + "/" + str(num_tests) + " PASS")
-    # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 4 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_4()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
     
     
 
