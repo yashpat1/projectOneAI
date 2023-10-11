@@ -3,9 +3,9 @@ import collections
 import heapq
 
 #grid = [[1 for i in range(d)] for i in range(d)]
-d = 50 # size of grid
+d = 20 # size of grid
 q = 0.8
-num_tests = 250
+num_tests = 100
 
 # creates the grid
 # grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
@@ -178,7 +178,7 @@ def spread_fire1(grid, fireCells, adjToFireCells):
             fireCells.append((adj_fire_x, adj_fire_y))
             adjToFireCells.remove((adj_fire_x, adj_fire_y))
             for (r2,c2) in [(1,0), (-1,0), (0,-1), (0, 1)]:
-                if validCell(adj_fire_x + r2, adj_fire_y + c2) and (adj_fire_x + r2, adj_fire_y + c2) not in adjToFireCells and (grid[adj_fire_x + r2][adj_fire_y + c2] == 1 or grid[adj_fire_x + r2][adj_fire_y + c2] == 2):
+                if validCell(adj_fire_x + r2, adj_fire_y + c2) and (adj_fire_x + r2, adj_fire_y + c2) not in adjToFireCells and (grid[adj_fire_x + r2][adj_fire_y + c2] == 1 or grid[adj_fire_x + r2][adj_fire_y + c2] == 2 or grid[adj_fire_x + r2][adj_fire_y + c2] == 4):
                     adjToFireCells.append((adj_fire_x + r2, adj_fire_y + c2))
 
                 
@@ -235,22 +235,27 @@ def run_bot_1():
     prev = bfs(bot_x, bot_y,grid)
     path = getPath(bot_x, bot_y, button_x, button_y, prev)
     #print(path)
+    #print(len(path))
     #printGrid(grid)
     time = 1
     while True:
         #print("Time:" + str(time))
-        #print(path)
-        #printGrid(grid)
         if len(path) == 0:
+            return "Failed"
+        if grid[bot_x][bot_y] == 3:
             return "Failed"
         grid[bot_x][bot_y] = 1
         bot_x, bot_y = path[time]
+        if grid[bot_x][bot_y] == 3:
+            return "Failed"
         grid[bot_x][bot_y] = 2
         if bot_x == button_x and bot_y == button_y:
             return "Completed"
         spread_fire1(grid, fireCells, adjToFireCells)
-        if grid[bot_x][bot_y] == 3:
+        if grid[bot_x][bot_y] == 3 or grid[button_x][button_y] == 3:
             return "Failed"
+        #print(path)
+        #printGrid(grid)
         time += 1
 
 # runs bot 2
@@ -421,44 +426,44 @@ def run_bots():
     print(str(num_success) + "/" + str(num_tests) + " PASS")
     print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
-    print()
-    num_success = 0
-    num_fail = 0
-    print("Running Tests for Bot 2 at q: " + str(q))
-    for i in range(num_tests):
-        result = run_bot_2()
-        if result == "Completed":
-            num_success += 1
-        else:
-            num_fail += 1
-    print(str(num_success) + "/" + str(num_tests) + " PASS")
-    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+    # print()
+    # num_success = 0
+    # num_fail = 0
+    # print("Running Tests for Bot 2 at q: " + str(q))
+    # for i in range(num_tests):
+    #     result = run_bot_2()
+    #     if result == "Completed":
+    #         num_success += 1
+    #     else:
+    #         num_fail += 1
+    # print(str(num_success) + "/" + str(num_tests) + " PASS")
+    # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
-    print()
-    num_success = 0
-    num_fail = 0
-    print("Running Tests for Bot 3 at q: " + str(q))
-    for i in range(num_tests):
-        result = run_bot_3()
-        if result == "Completed":
-            num_success += 1
-        else:
-            num_fail += 1
-    print(str(num_success) + "/" + str(num_tests) + " PASS")
-    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+    # print()
+    # num_success = 0
+    # num_fail = 0
+    # print("Running Tests for Bot 3 at q: " + str(q))
+    # for i in range(num_tests):
+    #     result = run_bot_3()
+    #     if result == "Completed":
+    #         num_success += 1
+    #     else:
+    #         num_fail += 1
+    # print(str(num_success) + "/" + str(num_tests) + " PASS")
+    # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
-    print()
-    num_success = 0
-    num_fail = 0
-    print("Running Tests for Bot 4 at q: " + str(q))
-    for i in range(num_tests):
-        result = run_bot_4()
-        if result == "Completed":
-            num_success += 1
-        else:
-            num_fail += 1
-    print(str(num_success) + "/" + str(num_tests) + " PASS")
-    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+    # print()
+    # num_success = 0
+    # num_fail = 0
+    # print("Running Tests for Bot 4 at q: " + str(q))
+    # for i in range(num_tests):
+    #     result = run_bot_4()
+    #     if result == "Completed":
+    #         num_success += 1
+    #     else:
+    #         num_fail += 1
+    # print(str(num_success) + "/" + str(num_tests) + " PASS")
+    # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
     
     
 
