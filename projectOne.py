@@ -4,7 +4,7 @@ import heapq
 
 #grid = [[1 for i in range(d)] for i in range(d)]
 d = 20 # size of grid
-q = 0.8
+q = 0.2
 num_tests = 100
 
 # creates the grid
@@ -454,31 +454,31 @@ def run_bots():
     print(str(num_success) + "/" + str(num_tests) + " PASS")
     print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
-    # print()
-    # num_success = 0
-    # num_fail = 0
-    # print("Running Tests for Bot 2 at q: " + str(q))
-    # for i in range(num_tests):
-    #     result = run_bot_2()
-    #     if result == "Completed":
-    #         num_success += 1
-    #     else:
-    #         num_fail += 1
-    # print(str(num_success) + "/" + str(num_tests) + " PASS")
-    # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 2 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_2()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
-    # print()
-    # num_success = 0
-    # num_fail = 0
-    # print("Running Tests for Bot 3 at q: " + str(q))
-    # for i in range(num_tests):
-    #     result = run_bot_3()
-    #     if result == "Completed":
-    #         num_success += 1
-    #     else:
-    #         num_fail += 1
-    # print(str(num_success) + "/" + str(num_tests) + " PASS")
-    # print(str(num_fail) + "/" + str(num_tests) + " FAIL")
+    print()
+    num_success = 0
+    num_fail = 0
+    print("Running Tests for Bot 3 at q: " + str(q))
+    for i in range(num_tests):
+        result = run_bot_3()
+        if result == "Completed":
+            num_success += 1
+        else:
+            num_fail += 1
+    print(str(num_success) + "/" + str(num_tests) + " PASS")
+    print(str(num_fail) + "/" + str(num_tests) + " FAIL")
 
     print()
     num_success = 0
