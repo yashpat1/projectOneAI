@@ -3,7 +3,7 @@ import collections
 import heapq
 
 #grid = [[1 for i in range(d)] for i in range(d)]
-d = 20 # size of grid
+d = 35 # size of grid
 q = 0.2
 num_tests = 100
 
@@ -354,6 +354,7 @@ def run_bot_3():
 def h(x, y, button_x, button_y):
     return abs(x - button_x) + abs(y - button_y)
 
+# calculate the weight based on athe distance from a neighboring cell to its nearest fire cell
 def weight(x, y, grid):
     q = collections.deque()
     visited = []
@@ -375,7 +376,7 @@ def weight(x, y, grid):
                 visited.append((cur_x + r, cur_y + c))
                 distanceTo[(cur_x + r, cur_y + c)] = distanceTo[(cur_x, cur_y)] + 1
                 
-    return []
+    return 0
      
 
 # runs A* starting from bot cell
@@ -383,7 +384,7 @@ def a_star(bot_x, bot_y, button_x, button_y, grid):
     priority = []
     prev = [[None for i in range(d)] for i in range(d)]
     distanceTo = {}
-
+    weights = {}
     heapq.heappush(priority, (0, (bot_x,bot_y)))
     distanceTo[(bot_x, bot_y)] = 0
 
@@ -399,8 +400,10 @@ def a_star(bot_x, bot_y, button_x, button_y, grid):
                 if (cur_x + r, cur_y + c) not in distanceTo or temp_dist < distanceTo[(cur_x + r, cur_y + c)]:
                     distanceTo[(cur_x + r, cur_y + c)] = temp_dist
                     prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
-                    # fire_x, fire_y = weight(cur_x + r, cur_y + c, grid)
-                    heapq.heappush(priority, (temp_dist + weight(cur_x + r, cur_y + c, grid) + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
+                    if (cur_x + r, cur_y + c) not in weights:
+                        cellWeight = weight(cur_x + r, cur_y + c, grid)
+                        weights[(cur_x + r, cur_y + c)] = cellWeight
+                    heapq.heappush(priority, (temp_dist +  weights[(cur_x + r, cur_y + c)] + h(cur_x + r, cur_y + c, button_x, button_y), (cur_x + r, cur_y + c)))
     return prev
 
 # runs bot 4
