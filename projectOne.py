@@ -1,39 +1,17 @@
+# Yash Patel, Siddh Parmar
+# Each group member contributed fairly equally towards each method in the code (in which we shared ideas decided on the best course of action)
+
 import random
 import collections
 import heapq
 
-#grid = [[1 for i in range(d)] for i in range(d)]
 d = 35 # size of grid
-q = 0.2
+q = 0.8
 num_tests = 100
 
-# creates the grid
-# grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
-# openCells = []
-# fireCells = []
-# adjToFireCells = []
 
 # finds the open neighbors of a cell by finding coordinates left/right/up/down of given cell
 def adjacent(x, y, grid):
-    # if x > 0 and grid[x - 1][y] == 1:
-    #     x_left = x - 1
-    # else:
-    #     x_left = -1
-
-    # if x < len(grid) - 1 and grid[x + 1][y] == 1:
-    #     x_right = x + 1
-    # else:
-    #     x_right = -1
-    
-    # if y > 0 and grid[x][y - 1] == 1:
-    #     y_up = y - 1
-    # else: 
-    #     y_up = -1
-    
-    # if y < len(grid[x]) - 1 and grid[x][y + 1] == 1:
-    #     y_down = y + 1
-    # else:
-    #     y_down = -1
     numNeighbors = 0
     for (r,c) in [(1,0), (-1,0), (0,-1), (0, 1)]:
         if validCell(x + r, y + c):
@@ -46,19 +24,9 @@ def adjacent(x, y, grid):
 
     return numNeighbors - numBlockedNeighbors == 1
 
-
-    return x_left, x_right, y_up, y_down
-
 # Returns if cell is in the grid
 def validCell(x,y):
     return x >= 0 and x < d and y >= 0 and y < d
-
-# print's grid in terminal
-def printGrid(grid):
-     for x in range(d):
-        for y in range(d):
-            print(grid[x][y], end=" ")
-        print("\n")
 
 # initializes the grid with blocked cells
 def init_grid(grid, openCells):
@@ -91,9 +59,6 @@ def init_grid(grid, openCells):
     deadend = []
     for x in range(d):
         for y in range(d):
-            # left, right, up, down = adjacent(x,y, grid)
-            # if grid[x][y] == 1 and ((left != -1 and right == -1 and up == -1 and down == -1) or (left == -1 and right != -1 and up == -1 and down == -1) or (left == -1 and right == -1 and up != -1 and down == -1) or (left == -1 and right == -1 and up == -1 and down != -1)):
-            #     deadend.append((x,y))
             if grid[x][y] == 1 and adjacent(x, y, grid):
                 deadend.append((x, y))
 
@@ -115,16 +80,6 @@ def init_grid(grid, openCells):
         grid[neighborR][neighborC] = 1
         openCells.append((neighborR, neighborC))
         deadend.remove((selected_x, selected_y))
-
-
-# resets lists
-# def reset(openCells, fireCells, adjToFireCells):
-#      openCells = []
-#      fireCells = []
-#      adjToFireCells = []
-#      for i in range(d):
-#             for j in range(d):
-#                 grid[i][j] = 0
 
 # initialize the bot, fire, and button cells 
 def init_bot_fire_button(grid, openCells, fireCells, adjToFireCells):
@@ -159,9 +114,6 @@ def init_bot_fire_button(grid, openCells, fireCells, adjToFireCells):
 
 # spread fire every time step based on the probability 1 - (1 - q)^k
 def spread_fire1(grid, fireCells, adjToFireCells):
-    numChecked = 0
-    currLengthAdj = len(adjToFireCells)
-    #print("Adj Length" + str(currLengthAdj))
     adjCell_copy = []
     for adj_fire_x, adj_fire_y in adjToFireCells:
         adjCell_copy.append((adj_fire_x, adj_fire_y))
@@ -217,15 +169,8 @@ def bfs(bot_x, bot_y, grid):
                 prev[cur_x + r][cur_y + c] = (cur_x, cur_y)
     return prev
 
-def printPrev(prev):
-     for x in range(d):
-        for y in range(d):
-            print(prev[x][y], end=" ")
-        print("\n")
-
 # runs bot 1 
 def run_bot_1():
-    #print("Running Bot 1")
     grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
     openCells = []
     fireCells = []
@@ -234,12 +179,8 @@ def run_bot_1():
     bot_x, bot_y, button_x, button_y = init_bot_fire_button(grid, openCells, fireCells, adjToFireCells)
     prev = bfs(bot_x, bot_y,grid)
     path = getPath(bot_x, bot_y, button_x, button_y, prev)
-    #print(path)
-    #print(len(path))
-    #printGrid(grid)
     time = 1
     while True:
-        #print("Time:" + str(time))
         if len(path) == 0:
             return "Failed"
         if grid[bot_x][bot_y] == 3:
@@ -254,28 +195,20 @@ def run_bot_1():
         spread_fire1(grid, fireCells, adjToFireCells)
         if grid[bot_x][bot_y] == 3 or grid[button_x][button_y] == 3:
             return "Failed"
-        #print(path)
-        #printGrid(grid)
         time += 1
 
 # runs bot 2
 def run_bot_2():
-    #print("Running Bot 2")
     grid = [[0 for i in range(d)] for i in range(d)] # 0 signifies blocked, while 1 signifies open cell
     openCells = []
     fireCells = []
     adjToFireCells = []
     init_grid(grid, openCells)
     bot_x, bot_y, button_x, button_y = init_bot_fire_button(grid, openCells, fireCells, adjToFireCells)
-    # print(path)
-    # printGrid(grid)
     time = 1
     while True:
-        #print("Time:" + str(time))
         prev = bfs(bot_x, bot_y, grid)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
-        #print(path)
-        #printGrid(grid)
         if len(path) == 0:
             return "Failed"
         if grid[bot_x][bot_y] == 3:
@@ -315,25 +248,19 @@ def updated_bfs(bot_x, bot_y, grid, adjToFireCells):
 
 # runs bot 3 using updated bfs
 def run_bot_3():
-    #print("Running Bot 3")
     grid = [[0 for i in range(d)] for i in range(d)]
     openCells = []
     fireCells = []
     adjToFireCells = []
     init_grid(grid, openCells)
     bot_x, bot_y, button_x, button_y = init_bot_fire_button(grid, openCells, fireCells, adjToFireCells)
-    # print(path)
-    # printGrid(grid)
     time = 1
     while True:
-        #print("Time:" + str(time))
         prev = updated_bfs(bot_x, bot_y, grid, adjToFireCells)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
         if(path == []):
             prev = bfs(bot_x, bot_y, grid)
             path = getPath(bot_x, bot_y, button_x, button_y, prev)
-        #print(path)
-        #printGrid(grid)
         if len(path) == 0:
             return "Failed"
         if grid[bot_x][bot_y] == 3:
@@ -354,7 +281,7 @@ def run_bot_3():
 def h(x, y, button_x, button_y):
     return abs(x - button_x) + abs(y - button_y)
 
-# calculate the weight based on athe distance from a neighboring cell to its nearest fire cell
+# calculate the weight based on the distance of a neighboring cell to its nearest fire cell
 def weight(x, y, grid):
     q = collections.deque()
     visited = []
@@ -362,7 +289,6 @@ def weight(x, y, grid):
     q.append((x, y))
     visited.append((x, y))
     distanceTo[(x,y)] = 0
-    
 
     while len(q) != 0:
         cur_x, cur_y = q.popleft()
@@ -408,22 +334,16 @@ def a_star(bot_x, bot_y, button_x, button_y, grid):
 
 # runs bot 4
 def run_bot_4(): 
-    #print("Running Bot 4")
     grid = [[0 for i in range(d)] for i in range(d)]
     openCells = []
     fireCells = []
     adjToFireCells = []
     init_grid(grid, openCells)
     bot_x, bot_y, button_x, button_y = init_bot_fire_button(grid, openCells, fireCells, adjToFireCells)
-    # print(path)
-    # printGrid(grid)
     time = 1
     while True:
-        # print("Time:" + str(time))
         prev = a_star(bot_x, bot_y, button_x, button_y, grid)
         path = getPath(bot_x, bot_y, button_x, button_y, prev)
-       # print(path)
-       # printGrid(grid)
         if len(path) == 0:
             return "Failed"
         if grid[bot_x][bot_y] == 3:
@@ -495,20 +415,5 @@ def run_bots():
             num_fail += 1
     print(str(num_success) + "/" + str(num_tests) + " PASS")
     print(str(num_fail) + "/" + str(num_tests) + " FAIL")
-    
-    
-
-#     result = run_bot_2()
-#     print("Task " + result)
-#    # print("Reset")
-
-#     result = run_bot_3()
-#     print("Task " + result)
-#    # print("Reset")
-
-#     result = run_bot_4()
-#     print("Task " + result)
-   # print("Reset")
-
 
 run_bots()
