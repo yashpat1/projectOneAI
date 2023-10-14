@@ -111,7 +111,6 @@ def init_bot_fire_button(grid, openCells, fireCells, adjToFireCells):
 
     return bot_x, bot_y, button_x, button_y
 
-
 # spread fire every time step based on the probability 1 - (1 - q)^k
 def spread_fire1(grid, fireCells, adjToFireCells):
     adjCell_copy = []
